@@ -13,8 +13,9 @@ public class BatteryMultiplexer {
 
     public BatteryMultiplexer(SimPowerSource simPowerSource) {
         this.simPowerSource = simPowerSource;
+
         graph = simPowerSource.getGraph();
-        //simBattery = new SimBattery(graph, Long.MAX_VALUE); This makes the program freeze for some reason
+        simBattery = new SimBattery(graph, Long.MAX_VALUE);
     }
 
     public long onUpdate(long now) {
@@ -25,7 +26,11 @@ public class BatteryMultiplexer {
             simPowerSource.supplyPower(powerDemand);
             //charge battery
         } else {
-            //discharge battery
+            //TODO: Connect the battery to the same multiplexer as SimPowerSource
+            /*
+            Note, the edge is not added to SimPowerSource on initialization
+             */
+           //simBattery.supplyPower(powerDemand);
         }
 
         return Long.MAX_VALUE;

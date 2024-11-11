@@ -80,7 +80,8 @@ public class SimBattery extends FlowNode implements FlowSupplier {
 
     @Override
     public long onUpdate(long now) {
-        return 0;
+        updateCounters();
+        return Long.MAX_VALUE;
     }
 
     public void supplyPower(double powerSupply) {

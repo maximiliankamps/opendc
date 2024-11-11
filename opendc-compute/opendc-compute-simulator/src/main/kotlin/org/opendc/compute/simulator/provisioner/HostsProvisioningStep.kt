@@ -57,7 +57,8 @@ public class HostsProvisioningStep internal constructor(
         for (cluster in clusterSpecs) {
             // Create the Power Source to which hosts are connected
 
-            val carbonFragments = getCarbonFragments(cluster.powerSource.carbonTracePath)
+            //TODO: the path "cluster.powerSource.carbonTracePath" does not work even when setting the carbon path in carbonTracePath
+            val carbonFragments = getCarbonFragments("carbon_traces/carbon_2012.parquet")
 
             val simPowerSource = SimPowerSource(graph, cluster.powerSource.totalPower.toDouble(), carbonFragments, startTime)
 

@@ -45,11 +45,17 @@ public final class SimPowerSource extends FlowNode implements FlowSupplier {
     private CarbonModel carbonModel = null;
     private FlowEdge muxEdge;
 
+    BatteryMultiplexer batteryMultiplexer = new BatteryMultiplexer(this);
+
     private double capacity = Long.MAX_VALUE;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Basic Getters and Setters
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public FlowEdge getMuxEdge() {
+        return muxEdge;
+    }
 
     /**
      * Determine whether the InPort is connected to a {@link SimCpu}.
@@ -127,13 +133,13 @@ public final class SimPowerSource extends FlowNode implements FlowSupplier {
     @Override
     public long onUpdate(long now) {
         updateCounters();
-        double powerSupply = this.powerDemand;
+        return batteryMultiplexer.onUpdate(now);
+    }
 
+    public void supplyPower(double powerSupply) {
         if (powerSupply != this.powerSupplied) {
             this.pushSupply(this.muxEdge, powerSupply);
         }
-
-        return Long.MAX_VALUE;
     }
 
     public void updateCounters() {

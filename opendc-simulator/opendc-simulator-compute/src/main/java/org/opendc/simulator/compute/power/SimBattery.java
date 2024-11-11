@@ -1,26 +1,21 @@
 package org.opendc.simulator.compute.power;
 
 import org.opendc.simulator.compute.cpu.SimCpu;
-import org.opendc.simulator.engine.FlowConsumer;
 import org.opendc.simulator.engine.FlowEdge;
 import org.opendc.simulator.engine.FlowGraph;
 import org.opendc.simulator.engine.FlowNode;
 import org.opendc.simulator.engine.FlowSupplier;
 
-import java.util.List;
-
-public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
+public class SimBattery extends FlowNode implements FlowSupplier {
     private long lastUpdate;
 
-    private double powerDemand = 0.0;
-    private double powerSupplied = 0.0;
-    private double totalEnergyUsage = 0.0;
+    private double powerDemand = 0.0f;
+    private double powerSupplied = 0.0f;
+    private double totalEnergyUsage = 0.0f;
 
-    private FlowEdge cpuEdge;
-    private FlowEdge powerSupplyEdge;
+    private FlowEdge muxEdge;
 
-    private final double capacity = 1000.0;
-    private double charge = 0.0;
+    private double capacity = Long.MAX_VALUE;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Basic Getters and Setters
@@ -32,7 +27,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
      * @return <code>true</code> if the InPort is connected to an OutPort, <code>false</code> otherwise.
      */
     public boolean isConnected() {
-        return cpuEdge != null;
+        return muxEdge != null;
     }
 
     /**
@@ -55,7 +50,6 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
      * Return the cumulated energy usage of the machine (in J) measured at the InPort of the powers supply.
      */
     public double getEnergyUsage() {
-        updateCounters();
         return totalEnergyUsage;
     }
 
@@ -68,10 +62,16 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public SimBattery(FlowGraph graph) {
+    public SimBattery(FlowGraph graph, double max_capacity) {
         super(graph);
 
+        this.capacity = max_capacity;
+
         lastUpdate = this.clock.millis();
+    }
+
+    public void close() {
+        this.closeNode();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,14 +80,13 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
 
     @Override
     public long onUpdate(long now) {
-        updateCounters();
-        double powerSupply = this.powerDemand;
+        return 0;
+    }
 
+    public void supplyPower(double powerSupply) {
         if (powerSupply != this.powerSupplied) {
-            this.pushSupply(this.cpuEdge, powerSupply);
+            this.pushSupply(this.muxEdge, powerSupply);
         }
-
-        return Long.MAX_VALUE;
     }
 
     public void updateCounters() {
@@ -103,8 +102,10 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
 
         long duration = now - lastUpdate;
         if (duration > 0) {
-            // Compute the energy usage of the psu
-            this.totalEnergyUsage += (this.powerSupplied * duration * 0.001);
+            double energyUsage = (this.powerSupplied * duration * 0.001);
+
+            // Compute the energy usage of the machine
+            this.totalEnergyUsage += energyUsage;
         }
     }
 
@@ -112,55 +113,27 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     // FlowGraph Related functionality
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Charge Battery
-    @Override
-    public void pushSupply(FlowEdge consumerEdge, double newSupply) {
-        this.powerSupplied = newSupply;
-        cpuEdge.pushSupply(newSupply);
-    }
-
     @Override
     public void handleDemand(FlowEdge consumerEdge, double newPowerDemand) {
 
-        updateCounters();
         this.powerDemand = newPowerDemand;
-
-        pushDemand(this.powerSupplyEdge, newPowerDemand);
-    }
-
-    // Discharge Battery
-    @Override
-    public void handleSupply(FlowEdge supplierEdge, double newPowerSupply) {
-
-        updateCounters();
-        this.powerSupplied = newPowerSupply;
-
-        pushSupply(this.cpuEdge, newPowerSupply);
+        this.invalidate();
     }
 
     @Override
-    public void pushDemand(FlowEdge supplierEdge, double newDemand) {
-        this.powerDemand = newDemand;
-        powerSupplyEdge.pushDemand(newDemand);
+    public void pushSupply(FlowEdge consumerEdge, double newSupply) {
+
+        this.powerSupplied = newSupply;
+        consumerEdge.pushSupply(newSupply);
     }
 
     @Override
     public void addConsumerEdge(FlowEdge consumerEdge) {
-        this.cpuEdge = consumerEdge;
-    }
-
-    @Override
-    public void addSupplierEdge(FlowEdge supplierEdge) {
-        this.powerSupplyEdge = supplierEdge;
+        this.muxEdge = consumerEdge;
     }
 
     @Override
     public void removeConsumerEdge(FlowEdge consumerEdge) {
-        this.cpuEdge = null;
-    }
-
-    @Override
-    public void removeSupplierEdge(FlowEdge supplierEdge) {
-        this.powerSupplyEdge = null;
+        this.muxEdge = null;
     }
 }

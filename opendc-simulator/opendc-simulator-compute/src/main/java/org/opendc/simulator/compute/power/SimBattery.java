@@ -7,8 +7,6 @@ import org.opendc.simulator.engine.FlowGraph;
 import org.opendc.simulator.engine.FlowNode;
 import org.opendc.simulator.engine.FlowSupplier;
 
-import java.util.List;
-
 public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     private long lastUpdate;
 
@@ -16,11 +14,13 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     private double powerSupplied = 0.0;
     private double totalEnergyUsage = 0.0;
 
-    private FlowEdge cpuEdge;
+    private FlowEdge muxEdge;
     private FlowEdge powerSupplyEdge;
 
     private final double capacity = 1000.0;
     private double charge = 0.0;
+
+    private BatteryState state = BatteryState.IDLE;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Basic Getters and Setters
@@ -32,7 +32,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
      * @return <code>true</code> if the InPort is connected to an OutPort, <code>false</code> otherwise.
      */
     public boolean isConnected() {
-        return cpuEdge != null;
+        return muxEdge != null;
     }
 
     /**
@@ -64,13 +64,16 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
         return this.capacity;
     }
 
+    public BatteryState getState() {
+        return this.state;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructors
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public SimBattery(FlowGraph graph) {
         super(graph);
-
         lastUpdate = this.clock.millis();
     }
 
@@ -81,10 +84,21 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     @Override
     public long onUpdate(long now) {
         updateCounters();
-        double powerSupply = this.powerDemand;
 
-        if (powerSupply != this.powerSupplied) {
-            this.pushSupply(this.cpuEdge, powerSupply);
+        if (state == BatteryState.DISCHARGING) {
+            double powerSupply = this.powerDemand;
+
+            if (powerSupply != this.powerSupplied) {
+                this.pushSupply(this.muxEdge, powerSupply);
+            }
+        } else if (state == BatteryState.CHARGING) {
+            double powerDemand = this.capacity - this.charge; //TODO: Change assumption that battery can be charged instantaneously
+
+            if (powerDemand != this.powerDemand) {
+                this.pushDemand(this.powerSupplyEdge, powerDemand);
+            }
+        } else if (state == BatteryState.IDLE) {
+            // do nothing
         }
 
         return Long.MAX_VALUE;
@@ -116,7 +130,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
     @Override
     public void pushSupply(FlowEdge consumerEdge, double newSupply) {
         this.powerSupplied = newSupply;
-        cpuEdge.pushSupply(newSupply);
+        muxEdge.pushSupply(newSupply);
     }
 
     @Override
@@ -135,7 +149,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
         updateCounters();
         this.powerSupplied = newPowerSupply;
 
-        pushSupply(this.cpuEdge, newPowerSupply);
+        pushSupply(this.muxEdge, newPowerSupply);
     }
 
     @Override
@@ -146,7 +160,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
 
     @Override
     public void addConsumerEdge(FlowEdge consumerEdge) {
-        this.cpuEdge = consumerEdge;
+        this.muxEdge = consumerEdge;
     }
 
     @Override
@@ -156,7 +170,7 @@ public class SimBattery extends FlowNode implements FlowSupplier, FlowConsumer {
 
     @Override
     public void removeConsumerEdge(FlowEdge consumerEdge) {
-        this.cpuEdge = null;
+        this.muxEdge = null;
     }
 
     @Override

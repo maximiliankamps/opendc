@@ -1,4 +1,6 @@
 package org.opendc.simulator.compute.power;
 
-public class CarbonPolicy {
+//TODO: Implement green energy availability measurement
+public interface CarbonPolicy {
+
 }

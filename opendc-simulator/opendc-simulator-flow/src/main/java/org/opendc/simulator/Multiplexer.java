@@ -60,7 +60,9 @@ public class Multiplexer extends FlowNode implements FlowSupplier, FlowConsumer 
     public long onUpdate(long now) {
 
         if (this.totalDemand > this.capacity) {
+            System.out.println("The demand is greater then the supply");
             redistributeSupply(this.consumerEdges, this.supplies, this.capacity);
+
         } else {
             for (int i = 0; i < this.demands.size(); i++) {
                 this.supplies.set(i, this.demands.get(i));
@@ -86,7 +88,6 @@ public class Multiplexer extends FlowNode implements FlowSupplier, FlowConsumer 
     private static double redistributeSupply(
             ArrayList<FlowEdge> consumerEdges, ArrayList<Double> supplies, double capacity) {
         final long[] consumers = new long[consumerEdges.size()];
-
         for (int i = 0; i < consumers.length; i++) {
             FlowEdge consumer = consumerEdges.get(i);
 

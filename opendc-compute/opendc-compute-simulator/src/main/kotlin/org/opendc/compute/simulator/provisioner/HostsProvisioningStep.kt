@@ -66,6 +66,7 @@ public class HostsProvisioningStep internal constructor(
             simPowerSources.add(simPowerSource)
 
             val powerMux = Multiplexer(graph)
+            //TODO: Instead of simPowerSource we can add a battery multiplexer here, that multiplexes between Battery and simPowerSource
             graph.addEdge(powerMux, simPowerSource)
 
             // Create hosts, they are connected to the powerMux when SimMachine is created

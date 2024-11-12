@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/buildSrc" name="buildSrc">
+                <projects>
+                  <project path="$PROJECT_DIR$/buildSrc" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/opendc-common" />
+            <option value="$PROJECT_DIR$/opendc-compute" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-api" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-carbon" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-failure" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-simulator" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-topology" />
+            <option value="$PROJECT_DIR$/opendc-compute/opendc-compute-workload" />
+            <option value="$PROJECT_DIR$/opendc-experiments" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-base" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-faas" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-m3sa" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-scenario" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-tf20" />
+            <option value="$PROJECT_DIR$/opendc-experiments/opendc-experiments-workflow" />
+            <option value="$PROJECT_DIR$/opendc-faas" />
+            <option value="$PROJECT_DIR$/opendc-faas/opendc-faas-api" />
+            <option value="$PROJECT_DIR$/opendc-faas/opendc-faas-service" />
+            <option value="$PROJECT_DIR$/opendc-faas/opendc-faas-simulator" />
+            <option value="$PROJECT_DIR$/opendc-simulator" />
+            <option value="$PROJECT_DIR$/opendc-simulator/opendc-simulator-compute" />
+            <option value="$PROJECT_DIR$/opendc-simulator/opendc-simulator-core" />
+            <option value="$PROJECT_DIR$/opendc-simulator/opendc-simulator-flow" />
+            <option value="$PROJECT_DIR$/opendc-trace" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-api" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-calcite" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-failure" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-parquet" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-testkit" />
+            <option value="$PROJECT_DIR$/opendc-trace/opendc-trace-tools" />
+            <option value="$PROJECT_DIR$/opendc-web" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-client" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-proto" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-runner" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-runner-quarkus" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-runner-quarkus-deployment" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-server" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-ui" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-ui-quarkus" />
+            <option value="$PROJECT_DIR$/opendc-web/opendc-web-ui-quarkus-deployment" />
+            <option value="$PROJECT_DIR$/opendc-workflow" />
+            <option value="$PROJECT_DIR$/opendc-workflow/opendc-workflow-api" />
+            <option value="$PROJECT_DIR$/opendc-workflow/opendc-workflow-service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

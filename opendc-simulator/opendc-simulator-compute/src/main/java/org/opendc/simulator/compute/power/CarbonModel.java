@@ -27,12 +27,12 @@ import org.opendc.simulator.engine.FlowGraph;
 import org.opendc.simulator.engine.FlowNode;
 
 /**
- * CarbonModel used to provide the Carbon Intensity of a {@link SimPowerSource}
+ * CarbonModel used to provide the Carbon Intensity of a {@link PowerAdapter}
  * A CarbonModel is based on a list of {@link CarbonFragment} that define the carbon intensity at specific time frames.
  */
 public class CarbonModel extends FlowNode {
 
-    private SimPowerSource powerSource;
+    private PowerAdapter powerSource;
 
     private long startTime = 0L; // The absolute timestamp on which the workload started
 
@@ -51,7 +51,7 @@ public class CarbonModel extends FlowNode {
      *                  to absolute time (used by carbon fragments).
      */
     public CarbonModel(
-            FlowGraph parentGraph, SimPowerSource powerSource, List<CarbonFragment> carbonFragments, long startTime) {
+        FlowGraph parentGraph, PowerAdapter powerSource, List<CarbonFragment> carbonFragments, long startTime) {
         super(parentGraph);
 
         this.powerSource = powerSource;

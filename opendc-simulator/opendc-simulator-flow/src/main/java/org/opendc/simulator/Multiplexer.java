@@ -24,6 +24,8 @@ package org.opendc.simulator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Flow;
+
 import org.opendc.simulator.engine.FlowConsumer;
 import org.opendc.simulator.engine.FlowEdge;
 import org.opendc.simulator.engine.FlowGraph;
@@ -33,6 +35,7 @@ import org.opendc.simulator.engine.FlowSupplier;
 public class Multiplexer extends FlowNode implements FlowSupplier, FlowConsumer {
     private ArrayList<FlowEdge> consumerEdges = new ArrayList<>();
     private FlowEdge supplierEdge;
+
 
     private ArrayList<Double> demands = new ArrayList<>(); // What is demanded by the consumers
     private ArrayList<Double> supplies = new ArrayList<>(); // What is supplied to the consumers
@@ -60,7 +63,6 @@ public class Multiplexer extends FlowNode implements FlowSupplier, FlowConsumer 
     public long onUpdate(long now) {
 
         if (this.totalDemand > this.capacity) {
-            System.out.println("The demand is greater then the supply");
             redistributeSupply(this.consumerEdges, this.supplies, this.capacity);
 
         } else {
@@ -74,14 +76,12 @@ public class Multiplexer extends FlowNode implements FlowSupplier, FlowConsumer 
             this.pushSupply(this.consumerEdges.get(i), this.supplies.get(i));
             totalSupply += this.supplies.get(i);
         }
-
         // Only update supplier if supply has changed
         if (this.totalSupply != totalSupply) {
             this.totalSupply = totalSupply;
 
             pushDemand(this.supplierEdge, this.totalSupply);
         }
-
         return Long.MAX_VALUE;
     }
 

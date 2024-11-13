@@ -32,7 +32,7 @@ import org.opendc.simulator.engine.FlowSupplier;
 /**
  * A {@link SimPsu} implementation that estimates the power consumption based on CPU usage.
  */
-public final class SimPowerSource extends FlowNode implements FlowSupplier {
+public final class PowerAdapter extends FlowNode implements FlowSupplier {
     private long lastUpdate;
 
     private double powerDemand = 0.0f;
@@ -100,13 +100,13 @@ public final class SimPowerSource extends FlowNode implements FlowSupplier {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public SimPowerSource(FlowGraph graph, double max_capacity, List<CarbonFragment> carbonFragments, long startTime) {
+    public PowerAdapter(FlowGraph graph, double max_capacity, List<CarbonFragment> carbonFragments, long startTime) {
         super(graph);
 
         this.capacity = max_capacity;
 
         if (carbonFragments != null) {
-            //this.carbonModel = new CarbonModel(graph, this, carbonFragments, startTime);
+            this.carbonModel = new CarbonModel(graph, this, carbonFragments, startTime);
         }
         lastUpdate = this.clock.millis();
     }
@@ -164,7 +164,6 @@ public final class SimPowerSource extends FlowNode implements FlowSupplier {
     @Override
     public void handleDemand(FlowEdge consumerEdge, double newPowerDemand) {
 
-        System.out.println(consumerEdge.getConsumer().getClass() + " " + newPowerDemand);
         this.powerDemand = newPowerDemand;
         this.invalidate();
     }
@@ -192,4 +191,3 @@ public final class SimPowerSource extends FlowNode implements FlowSupplier {
         this.carbonIntensity = carbonIntensity;
     }
 }
-

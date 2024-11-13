@@ -28,7 +28,9 @@ import org.opendc.compute.simulator.service.ComputeService
 import org.opendc.compute.topology.specs.ClusterSpec
 import org.opendc.compute.topology.specs.HostSpec
 import org.opendc.simulator.Multiplexer
-import org.opendc.simulator.compute.power.SimPowerSource
+import org.opendc.simulator.compute.power.BatteryMultiplexer
+import org.opendc.simulator.compute.power.SimBattery
+import org.opendc.simulator.compute.power.PowerAdapter
 import org.opendc.simulator.engine.FlowEngine
 
 /**
@@ -49,7 +51,7 @@ public class HostsProvisioningStep internal constructor(
                 ctx.registry.resolve(serviceDomain, ComputeService::class.java),
             ) { "Compute service $serviceDomain does not exist" }
         val simHosts = mutableSetOf<SimHost>()
-        val simPowerSources = mutableListOf<SimPowerSource>()
+        val powerAdapters = mutableListOf<PowerAdapter>()
 
         val engine = FlowEngine.create(ctx.dispatcher)
         val graph = engine.newGraph()
@@ -60,14 +62,21 @@ public class HostsProvisioningStep internal constructor(
             //TODO: the path "cluster.powerSource.carbonTracePath" does not work even when setting the carbon path in carbonTracePath
             val carbonFragments = getCarbonFragments("carbon_traces/carbon_2012.parquet")
 
-            val simPowerSource = SimPowerSource(graph, cluster.powerSource.totalPower.toDouble(), carbonFragments, startTime)
-
-            service.addPowerSource(simPowerSource)
-            simPowerSources.add(simPowerSource)
+            val powerAdapter = PowerAdapter(
+                graph,
+                cluster.powerSource.totalPower.toDouble(),
+                carbonFragments,
+                startTime
+            )
 
             val powerMux = Multiplexer(graph)
-            //TODO: Instead of simPowerSource we can add a battery multiplexer here, that multiplexes between Battery and simPowerSource
-            graph.addEdge(powerMux, simPowerSource)
+
+            graph.addEdge(powerMux, powerAdapter)
+
+            //val simBattery = SimBattery(graph, 10000.0)
+            //val batteryMultiplexer = BatteryMultiplexer(graph, powerAdapter, simBattery)
+
+
 
             // Create hosts, they are connected to the powerMux when SimMachine is created
             for (hostSpec in cluster.hostSpecs) {
@@ -93,7 +102,7 @@ public class HostsProvisioningStep internal constructor(
                 simHost.close()
             }
 
-            for (simPowerSource in simPowerSources) {
+            for (simPowerSource in powerAdapters) {
                 // TODO: add close function
                 simPowerSource.close()
             }
